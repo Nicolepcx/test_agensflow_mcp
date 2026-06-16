@@ -1,0 +1,12 @@
+id: 5
+title: Feature — export tasks to CSV
+labels: [enhancement, reporting]
+severity: low
+state: open
+author: eve
+created_at: 2026-06-06
+body: |
+  Would like a `taskflow export --format csv` command that writes all
+  tasks to CSV (id, text, priority, done, due, recurrence, project_id,
+  tags). Useful for spreadsheets and reporting. New module under
+  reporting/ plus a CLI command.

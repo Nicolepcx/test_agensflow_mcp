@@ -1,0 +1,19 @@
+id: 2
+title: Concurrent task writes lose updates / corrupt the store file
+labels: [bug, storage, concurrency]
+severity: high
+state: open
+author: bob
+created_at: 2026-06-03
+body: |
+  Running two taskflow commands that both write at the same time loses
+  one of the updates, and can leave tasks.json half-written (a later
+  read throws JSONDecodeError).
+
+  Root cause: storage/json_store.py does a non-atomic, unlocked
+  load -> modify -> save. The fix needs an atomic write (tempfile +
+  os.replace) and a lock spanning the read-modify-write window, plus the
+  base.py contract docstring updated to promise atomicity.
+
+  Regression test already exists and currently fails:
+    tests/storage/test_json_store.py::test_concurrent_writes_preserve_all

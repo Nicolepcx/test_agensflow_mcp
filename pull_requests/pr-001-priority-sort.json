@@ -1,0 +1,13 @@
+{
+  "number": 1,
+  "title": "Sort 'todo list' by priority then due date",
+  "author": "dave",
+  "state": "open",
+  "body": "Closes #4. Sorts items high → normal → low, then by due date ascending within each bucket.",
+  "files_changed": ["src/test_app/cli.py"],
+  "diff": "@@ -32,6 +32,15 @@\n def list_(overdue: bool) -> None:\n     items = load_all()\n     if overdue:\n         items = core.filter_overdue(items)\n+    PRIORITY_ORDER = {\"high\": 0, \"normal\": 1, \"low\": 2}\n+    def sort_key(item):\n+        return (\n+            PRIORITY_ORDER.get(item[\"priority\"], 1),\n+            item.get(\"due\") or \"9999-99-99\",\n+        )\n+    items = sorted(items, key=sort_key)\n     for item in items:\n         mark = \"x\" if item[\"done\"] else \" \"",
+  "review_targets": [
+    "completed items still appear in the list — should they be hidden, or shown but separated?",
+    "the 9999-99-99 sentinel is fragile — what if PyYAML serializes the date differently?"
+  ]
+}

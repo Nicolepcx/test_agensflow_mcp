@@ -1,0 +1,14 @@
+{
+  "number": 1,
+  "title": "Clamp invalid day-of-month in parse_due",
+  "author": "alice",
+  "state": "open",
+  "body": "Partial fix for #1 and #3. Clamps feb 29 -> feb 28 in non-leap years inside parse_due.",
+  "files_changed": ["src/taskflow/dates/parsing.py"],
+  "diff": "@@ parse_due @@\n         month = _MONTHS.get(month_name)\n         if month is None:\n             raise ParseError(f\"unknown month: {month_name}\")\n-        try:\n-            return dt.date(today.year, month, day)\n-        except ValueError as e:\n-            raise ParseError(str(e)) from e\n+        import calendar\n+        last = calendar.monthrange(today.year, month)[1]\n+        return dt.date(today.year, month, min(day, last))",
+  "review_targets": [
+    "This fixes parsing but does NOT address #1's recurrence-pass abort: roll_recurrences still has no per-task error containment, so any other un-rollable task still kills the whole pass.",
+    "No regression test was added. tests/core/test_recurrence.py::test_yearly_leap_rolls_without_crash and tests/dates/test_parsing.py::test_leap_year_clamping should be made to pass.",
+    "Importing calendar inside the function on every call is wasteful — hoist to module scope."
+  ]
+}

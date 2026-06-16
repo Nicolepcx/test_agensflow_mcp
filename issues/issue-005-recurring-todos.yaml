@@ -1,0 +1,9 @@
+id: 5
+title: feature request — recurring todos (daily, weekly)
+labels: [enhancement, feature-request]
+state: open
+author: eve
+created_at: 2026-06-05
+body: |
+  Would love to be able to add todos that recur, e.g. `todo add "Standup"
+  --recur daily`. When marked done it would auto-insert the next instance.

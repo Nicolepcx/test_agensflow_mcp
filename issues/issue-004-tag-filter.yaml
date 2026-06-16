@@ -1,0 +1,12 @@
+id: 4
+title: Feature — filter `list` by tag
+labels: [enhancement, cli]
+severity: low
+state: open
+author: dave
+created_at: 2026-06-05
+body: |
+  The Query model already supports a `tag` filter, but the `list` CLI
+  command does not expose it. Add a `--tag` option to `taskflow list`
+  that filters to tasks carrying that tag. Should compose with the
+  existing `--overdue` flag.

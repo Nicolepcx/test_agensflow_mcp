@@ -1,0 +1,25 @@
+id: 1
+title: Yearly recurring task due Feb 29 crashes the whole recurrence pass
+labels: [bug, dates, recurrence]
+severity: high
+state: open
+author: alice
+created_at: 2026-06-02
+body: |
+  Completing a YEARLY recurring task that is due on Feb 29 of a leap year
+  throws and aborts roll_recurrences entirely — every other recurring
+  task in the same pass silently fails to roll.
+
+  Root cause spans two modules:
+    - dates/parsing.py: parse_due does not clamp an invalid day-of-month
+      (the docstring claims it clamps to the last valid day; it doesn't).
+    - core/recurrence.py: _advance for YEARLY re-parses "<month> <day>"
+      via parse_due for next year, so Feb 29 -> non-leap year raises,
+      and roll_recurrences has no per-task error containment.
+
+  Repro:
+    >>> from taskflow.core.recurrence import roll_recurrences
+    >>> from taskflow.models import Task, Recurrence
+    >>> t = Task(id=1, text="taxes", done=True, due="2028-02-29",
+    ...          recurrence=Recurrence.YEARLY)
+    >>> roll_recurrences([t])   # raises ParseError

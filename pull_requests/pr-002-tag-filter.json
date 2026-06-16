@@ -1,0 +1,14 @@
+{
+  "number": 2,
+  "title": "Add --tag filter to list command",
+  "author": "dave",
+  "state": "open",
+  "body": "Closes #4. Adds a --tag option to `taskflow list` wired to Query(tag=...).",
+  "files_changed": ["src/taskflow/cli/main.py", "src/taskflow/cli/commands.py"],
+  "diff": "@@ cmd_list @@\n-def cmd_list(store: Store, overdue: bool) -> list[str]:\n+def cmd_list(store: Store, overdue: bool, tag: str | None = None) -> list[str]:\n     tasks = store.load_tasks()\n-    if overdue:\n-        tasks = run_query(tasks, Query(done=False, overdue=True))\n+    q = Query(done=False if overdue else None, overdue=overdue, tag=tag)\n+    tasks = run_query(tasks, q)",
+  "review_targets": [
+    "Setting done=False whenever overdue is passed changes existing behavior: a plain `list` (no flags) used to show done tasks too; this PR's Query(done=None) path is fine but the overdue branch now hides completed tasks — confirm that's intended.",
+    "No test added for the --tag path.",
+    "What happens with `--tag` and `--overdue` together? The composition isn't covered by a test."
+  ]
+}

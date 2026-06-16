@@ -1,0 +1,13 @@
+{
+  "number": 2,
+  "title": "Fix leap-year clamping in parse_due",
+  "author": "alice",
+  "state": "open",
+  "body": "Closes #1 and #3. Clamps day-of-month to the last valid day per the docs.",
+  "files_changed": ["src/test_app/dates.py"],
+  "diff": "@@ -42,6 +42,12 @@ def parse_due(...):\n         month = _MONTHS.get(month_name)\n         if month is None:\n             raise ValueError(f\"unknown month: {month_name}\")\n-        return dt.date(today.year, month, day)\n+        try:\n+            return dt.date(today.year, month, day)\n+        except ValueError:\n+            # Clamp to last valid day of this month per docs.\n+            import calendar\n+            last = calendar.monthrange(today.year, month)[1]\n+            return dt.date(today.year, month, last)",
+  "review_targets": [
+    "the try/except is correct but loses information about WHY we clamped — log at INFO level?",
+    "no test for the clamping was added — needs one"
+  ]
+}

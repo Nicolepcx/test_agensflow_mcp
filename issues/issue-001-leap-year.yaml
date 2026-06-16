@@ -1,0 +1,16 @@
+id: 1
+title: parse_due raises on 'feb 29' in non-leap years
+labels: [bug, dates]
+state: open
+author: alice
+created_at: 2026-06-01
+body: |
+  The docs claim that invalid day-for-month combinations clamp to the
+  last valid day. Calling `todo add "Pay taxes" --due "feb 29"` in 2027
+  raises ValueError instead of clamping to feb 28.
+
+  Repro:
+    >>> from test_app.dates import parse_due
+    >>> import datetime as dt
+    >>> parse_due("feb 29", today=dt.date(2027, 1, 1))
+    ValueError: day is out of range for month
